@@ -21,6 +21,7 @@
 #include "qemu/osdep.h"
 #include "qemu/ctype.h"
 #include "qemu/qemu-print.h"
+#include "qobject/qdict.h"
 #include "cpu.h"
 #include "target/riscv/tcg/csr.h"
 #include "cpu_bits.h"
@@ -218,8 +219,18 @@ static void mem_info_svxx(Monitor *mon, CPUArchState *env)
 void hmp_info_mem(Monitor *mon, const QDict *qdict)
 {
     CPUArchState *env;
-
-    env = mon_get_cpu_env(mon);
+    CPUState *cs;
+    if (qdict_haskey(qdict, "cpu")) {
+        int cpu = qdict_get_int(qdict, "cpu");
+        cs = qemu_get_cpu(cpu);
+        if (!cs) {
+            monitor_printf(mon, "Invalid CPU: %d\n", cpu);
+            return;
+        }
+        env = cpu_env(cs);
+    } else {
+        env = mon_get_cpu_env(mon);
+    }
     if (!env) {
         monitor_printf(mon, "No CPU available\n");
         return;

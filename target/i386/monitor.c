@@ -540,7 +540,17 @@ void hmp_info_mem(Monitor *mon, const QDict *qdict)
     CPUArchState *env;
     AddressSpace *as;
 
-    env = mon_get_cpu_env(mon);
+    if (qdict_haskey(qdict, "cpu")) {
+        int cpu = qdict_get_int(qdict, "cpu");
+        CPUState *cs = qemu_get_cpu(cpu);
+        if (!cs) {
+            monitor_printf(mon, "Invalid CPU: %d\n", cpu);
+            return;
+        }
+        env = cpu_env(cs);
+    } else {
+        env = mon_get_cpu_env(mon);
+    }
     if (!env) {
         monitor_printf(mon, "No CPU available\n");
         return;

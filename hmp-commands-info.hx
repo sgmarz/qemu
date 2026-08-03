@@ -203,8 +203,8 @@ ERST
 
     {
         .name       = "mem",
-        .args_type  = "",
-        .params     = "",
+        .args_type  = "cpu:i?",
+        .params     = "[cpu]",
         .help       = "show the active virtual memory mappings",
         .cmd        = hmp_info_mem,
         .arch_bitmask = QEMU_ARCH_I386 | QEMU_ARCH_RISCV,
